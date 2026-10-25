@@ -647,38 +647,28 @@ function create(){nf.title=$('ti').value.trim();if(!nf.title){$('ti').focus();re
 
 applyTheme(TH,0);dedupe();applyLK();paintMe();render();sync();cloudInit();setInterval(achCheck,20000);setTimeout(achCheck,2500);$('fsb').innerHTML=IC.fs;
 
- let KRES=[];
+let KRES=[];
 function kodikSearch(){
  const q=$('ti').value.trim();
- if(!q){toast('Введите название фильма или сериала');$('ti').focus();return}
- const box=$('kres');if(box)box.innerHTML='<p class="hint">Ищу в базе Kodik…</p>';
+ if(!q){toast('Введите название аниме');$('ti').focus();return}
+ const box=$('kres');if(box)box.innerHTML='<p class="hint">Ищу в AnimeGO…</p>';
  fetch('/api/kodik?q='+encodeURIComponent(q)).then(r=>r.json()).then(j=>{
   KRES=j.results||[];
   if(!KRES.length){if(box)box.innerHTML='<p class="hint">Ничего не найдено</p>';return}
   box.innerHTML=`<div style="max-height:280px;overflow:auto;margin-bottom:12px;display:grid;gap:8px">`+KRES.map((it,i)=>{
-   const md=it.material_data||{},p=md.poster_url||md.anime_poster_url||'',tr=it.translation&&it.translation.title?it.translation.title:'';
-   return `<button type="button" class="pp" style="margin:0" onclick="kodikPick(${i})"><span class="pv" style="${p?`background-image:url('${esc(p)}')`:''}">${p?'':'🎬'}</span><span style="flex:1;min-width:0"><b style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(it.title)}</b><small>${esc([it.year,tr,it.type].filter(Boolean).join(' · '))}</small></span></button>`;
+   const p=it.poster||'';
+   return `<button type="button" class="pp" style="margin:0" onclick="kodikPick(${i})"><span class="pv" style="${p?`background-image:url('${esc(p)}')`:''}">${p?'':'🎬'}</span><span style="flex:1;min-width:0"><b style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(it.title)}</b><small>${esc([it.year,it.type].filter(Boolean).join(' · '))}</small></span></button>`;
   }).join('')+`</div>`;
  }).catch(()=>{if(box)box.innerHTML='<p class="hint">Ошибка соединения с сервером</p>'});
 }
 
 function kodikPick(idx){
  const it=KRES[idx];if(!it)return;
- const md=it.material_data||{},p=md.poster_url||md.anime_poster_url||'';
- const isSer=!!it.seasons,tp=/anime|cartoon/i.test(it.type||'')?'cartoon':(isSer?'series':'movie');
- const seasons={},links=[];
- const norm=u=>u.startsWith('//')?'https:'+u:u;
- if(it.seasons){
-  for(const s in it.seasons){
-   const eps=it.seasons[s].episodes||{};
-   const ek=Object.keys(eps).map(Number).sort((a,b)=>a-b);
-   seasons[s]=ek.length?Math.max(...ek):1;
-   for(const e of ek)links.push([s,e,norm(eps[e])]);
-  }
- }else{
-  seasons[1]=1;
-  if(it.link)links.push([1,1,norm(it.link)]);
- }
+ const p=it.poster||'';
+ const tp='cartoon';
+ const seasons={1:1};
+ const links=[];
+ if(it.url)links.push([1,1,it.url]);
  const d={id:'u'+Date.now(),type:tp,title:it.title,year:String(it.year||''),seasons,h:10+Math.random()*20|0,poster:p};
  DATA.push(d);
  links.forEach(([s,e,u])=>setLink(`${d.id}:${s}:${e}`,u));
