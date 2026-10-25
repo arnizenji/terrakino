@@ -646,11 +646,11 @@ function create(){nf.title=$('ti').value.trim();if(!nf.title){$('ti').focus();re
  if(nf.files.length)assign(d,nf.files,1);if(on)putLinks(d,1,mv?[{e:0,u:list[0].u}]:list);if(on&&!mv)d.bg=1;if(nf.purl&&!nf.poster){const vd=nf.type=='video';posUrl(nf.purl.trim(),p=>{d.poster=p;save();render()},vd?640:360,vd?360:540)}if(nf.audio&&nf.type=='video')attachA(d.id+':1:1',nf.audio);tab=nf.type=='video'?'video':'all';Q='';$('q').value='';save();closeD()}
 
 applyTheme(TH,0);dedupe();applyLK();paintMe();render();sync();cloudInit();setInterval(achCheck,20000);setTimeout(achCheck,2500);$('fsb').innerHTML=IC.fs;
-</script>
-let KRES=[];
+
+ let KRES=[];
 function kodikSearch(){
  const q=$('ti').value.trim();
- if(!q){toast('Введите название фильма или сериала сверху');$('ti').focus();return}
+ if(!q){toast('Введите название фильма или сериала');$('ti').focus();return}
  const box=$('kres');if(box)box.innerHTML='<p class="hint">Ищу в базе Kodik…</p>';
  fetch('/api/kodik?q='+encodeURIComponent(q)).then(r=>r.json()).then(j=>{
   KRES=j.results||[];
@@ -686,5 +686,6 @@ function kodikPick(idx){
  tab='all';Q='';$('q').value='';save();closeD();
  toast('Добавлено: '+it.title+' ✓');
 }
+ </script>
 </body>
 </html>
