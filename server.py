@@ -397,41 +397,31 @@ class H(BaseHTTPRequestHandler):
         if not title:
             return self.jsend({"results": []})
         
-        search_url = f"https://animego.org/api/v1/search/anime?q={urllib.parse.quote(title)}"
+        # Используем официальный бесплатный публичный поиск Shikimori API
+        search_url = f"https://shikimori.me/api/animes?search={urllib.parse.quote(title)}&limit=15"
         req = urllib.request.Request(
             search_url,
             headers={
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                "Accept": "application/json, text/javascript, */*; q=0.01",
-                "X-Requested-With": "XMLHttpRequest",
-                "Referer": "https://animego.org/"
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) TerrakinoApp",
+                "Accept": "application/json"
             }
         )
         try:
             with OPENER.open(req, timeout=15) as r:
-                raw_data = r.read().decode("utf-8", "ignore")
-                data = json.loads(raw_data)
-                
-                # Проверяем все возможные ключи, куда API может положить список
-                raw_list = []
-                if isinstance(data, list):
-                    raw_list = data
-                elif isinstance(data, dict):
-                    raw_list = data.get("data") or data.get("list") or data.get("results") or []
-                    # Если структура вложенная
-                    if not raw_list and "anime" in data:
-                        raw_list = data.get("anime", {}).get("data", [])
-
+                data = json.loads(r.read().decode("utf-8", "ignore"))
                 results = []
-                for item in raw_list:
-                    if not isinstance(item, dict):
-                        continue
+                for item in data:
+                    # Shikimori возвращает относительный путь картинки, добавляем домен
+                    image_url = item.get("image", {}).get("original", "")
+                    if image_url and not image_url.startswith("http"):
+                        image_url = "https://shikimori.me" + image_url
+                        
                     results.append({
-                        "title": item.get("name") or item.get("title") or title,
-                        "year": str(item.get("year", "")),
-                        "type": str(item.get("type", {}).get("title") if isinstance(item.get("type"), dict) else item.get("type", "Сериал")),
-                        "poster": item.get("poster") or item.get("picture") or item.get("img", ""),
-                        "url": item.get("url") or f"https://animego.org/anime/{item.get('code', '')}"
+                        "title": item.get("russian") or item.get("name") or title,
+                        "year": str(item.get("aired_on", ""))[:4],
+                        "type": "Аниме-сериал" if item.get("kind") == "tv" else "Аниме-фильм",
+                        "poster": image_url,
+                        "url": f"https://shikimori.me{item.get('url', '')}"
                     })
                 return self.jsend({"results": results})
         except Exception as e:
