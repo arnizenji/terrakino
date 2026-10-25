@@ -397,7 +397,6 @@ class H(BaseHTTPRequestHandler):
         if not title:
             return self.jsend({"results": []})
         
-        # Используем официальный домен shikimori.io из документации
         search_url = f"https://shikimori.io/api/animes?search={urllib.parse.quote(title)}&limit=15"
         req = urllib.request.Request(
             search_url,
@@ -413,13 +412,17 @@ class H(BaseHTTPRequestHandler):
                     image_url = item.get("image", {}).get("original", "")
                     if image_url and not image_url.startswith("http"):
                         image_url = "https://shikimori.io" + image_url
+                    
+                    # Получаем англоязычный идентификатор из Shikimori и делаем ссылку на Jut.su
+                    slug = item.get("name", "")
+                    jutsu_url = f"https://jut.su/{slug}/" if slug else "https://jut.su/"
                         
                     results.append({
                         "title": item.get("russian") or item.get("name") or title,
                         "year": str(item.get("aired_on", ""))[:4],
                         "type": "Аниме-сериал" if item.get("kind") == "tv" else "Аниме-фильм",
                         "poster": image_url,
-                        "url": f"https://shikimori.io{item.get('url', '')}"
+                        "url": jutsu_url
                     })
                 return self.jsend({"results": results})
         except Exception as e:
