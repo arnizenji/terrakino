@@ -651,7 +651,7 @@ let KRES=[];
 function kodikSearch(){
  const q=$('ti').value.trim();
  if(!q){toast('Введите название аниме');$('ti').focus();return}
- const box=$('kres');if(box)box.innerHTML='<p class="hint">Ищу в AnimeGO…</p>';
+ const box=$('kres');if(box)box.innerHTML='<p class="hint">Ищу в Shikimori…</p>';
  fetch('/api/kodik?q='+encodeURIComponent(q)).then(r=>r.json()).then(j=>{
   KRES=j.results||[];
   if(!KRES.length){if(box)box.innerHTML='<p class="hint">Ничего не найдено</p>';return}
