@@ -8,6 +8,7 @@ from urllib.parse import unquote, urlparse, urlsplit, parse_qs
 HOST = "127.0.0.1"  # 127.0.0.1 = сайт виден только с этого телефона
 PORT = int(os.environ.get("TERRA_PORT") or 8080)
 ROOT = os.path.realpath(os.environ.get("TERRA_ROOT") or os.path.dirname(os.path.realpath(__file__)))  # папка с видео
+CLOUD = os.environ.get("TERRA_CLOUD") or ""  # cloud.json с адресом базы аккаунтов (необязателен)
 APP = os.environ.get("TERRA_APP") or ROOT  # где лежит index.html (в приложении для Android он отдельно от видео)
 PEND = os.path.join(ROOT, ".pending.json")
 EXT = (".mp4", ".mkv", ".webm", ".m4v", ".mov", ".avi")
@@ -36,8 +37,11 @@ def clean(t):
     return re.sub(r'[\\/:*?"<>|\x00-\x1f]+', " ", t).strip(" .")[:80] or "Без названия"
 
 
-def downloads():
-    return [os.path.join(os.path.dirname(ROOT), "Download"), os.path.expanduser("~/storage/downloads")]
+def downloads():  # где ищем файлы для мгновенного переноса (вместо копирования)
+    b = os.path.dirname(ROOT)
+    return [os.path.join(b, "Download"), os.path.join(b, "Download", "Telegram"), os.path.join(b, "Movies"),
+            os.path.join(b, "Telegram", "Telegram Video"), os.path.join(b, "Telegram", "Telegram Documents"),
+            os.path.expanduser("~/storage/downloads")]
 
 
 def natural(s):
@@ -290,6 +294,12 @@ class H(BaseHTTPRequestHandler):
             return self.blob(base64.b64decode(ICONS[name]), "image/png")
         if u == "/manifest.webmanifest":
             return self.blob(json.dumps(MANIFEST, ensure_ascii=False).encode(), "application/manifest+json; charset=utf-8")
+        if u == "/cloud.json":
+            try:
+                with open(CLOUD or os.path.join(APP, "cloud.json"), "rb") as fh:
+                    return self.blob(fh.read(), "application/json; charset=utf-8")
+            except OSError:
+                return self.send_error(404)
         if u == "/api/stats":
             return self.jsend(stats())
         if u == "/api/jobs":
@@ -521,6 +531,8 @@ class H(BaseHTTPRequestHandler):
         self.jsend({"ok": True, "path": rel(f), "removed": removed})
 
     def do_POST(self):
+        if not self.local_ok():  # чужие сайты в браузере не должны уметь удалять и переносить файлы
+            return self.jsend({"ok": False}, 403)
         u = urlparse(self.path)
         if u.path == "/api/fetch":
             return self.fetch(parse_qs(u.query))
