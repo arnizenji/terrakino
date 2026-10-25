@@ -357,7 +357,7 @@ function lnkSave(id,s,e,rm){const d=get(id),mv=d.type=='movie'||d.type=='video',
 function posUrl(u,cb,w,h){fetch(SRV?prx(u):u).then(r=>r.ok?r.blob():Promise.reject()).then(b=>b.type.indexOf('image/')==0?img(b,cb,w,h):Promise.reject()).catch(()=>cb(u))}
 function posDlg(id){dlg(`<h4>Постер по ссылке</h4><p class="hint">Ссылка на картинку (jpg, png, webp).</p><input class="in" id="pu" type="url" inputmode="url" placeholder="https://…" style="${IS}"><div class="cfr"><button class="tab" onclick="cfx(0)">Отмена</button><button class="tab on" onclick="posSave('${id}')">Сохранить</button></div>`)}
 function posSave(id){const u=($('pu').value.match(/https?:\/\/\S+/i)||[])[0];if(!u){toast('Нужна ссылка, которая начинается с http');return}const d=get(id),v=d.type=='video';cfx(0);toast('Загружаю постер…');posUrl(u,p=>{d.poster=p;save();AN=0;if(curV&&curV[0]=='d'&&curV[1]==id)drawD(d);render();toast('Постер сохранён ✓')},v?640:360,v?360:540)}
-function lkBox(mv){return `<button class="in" type="button" onclick="kodikSearch()" style="margin-top:0;margin-bottom:10px;border-style:solid;background:var(--acc);color:var(--on)">🔍 Найти в базе Kodik (с постером)</button><div id="kres"></div>`+(mv?`<input class="in" type="url" inputmode="url" placeholder="или прямая ссылка на видео (https://…)" value="${esc(nf.links||'')}" oninput="nf.links=this.value" style="${IS}">`:`<textarea class="in" rows="4" placeholder="или ссылки на серии первого сезона, по одной на строку" oninput="nf.links=this.value" style="${IS};resize:none">${esc(nf.links||'')}</textarea>`)}
+function lkBox(mv){return mv?`<input class="in" type="url" inputmode="url" placeholder="Ссылка на видео (https://…)" value="${esc(nf.links||'')}" oninput="nf.links=this.value" style="${IS}">`:`<textarea class="in" rows="5" placeholder="Ссылки на серии первого сезона, по одной на строку" oninput="nf.links=this.value" style="${IS};resize:none">${esc(nf.links||'')}</textarea>`}
 let DEAD=ld('dead',{});
 const bd=k=>{const f=F[k];if(!f)return'';if(!f.on)return'<span class="bd off">📱 на телефоне</span>';if(DEAD[k])return'<span class="bd bad">⚠ обновить ссылку</span>';return BG[k]!==undefined?'<span class="bd on">⬇ скачивается</span>':'<span class="bd on">🔗 онлайн</span>'};
 function okV(k){if(DEAD[k]){delete DEAD[k];sv('dead',DEAD)}}
@@ -541,8 +541,7 @@ function flip(k){W[k]?delete W[k]:W[k]=1;if(W[k]){delete POS[k];sv('pos',POS)}sa
  if(SRV&&SP[k]){const on=!!W[k];if(on&&dl==0){fetch('/api/del',{method:'POST',body:JSON.stringify({path:SP[k],after:0})}).catch(()=>{});delete F[k];delete SP[k];delete FN[k];delete AU[k];applyLK();save()}else fetch('/api/undel',{method:'POST',body:JSON.stringify({path:SP[k]})}).catch(()=>{})}}
 function tog(k,id){const go=()=>{flip(k);AN=0;nk=k;drawD(get(id));render()};W[k]?go():ask(k,go)}
 function play(id,s,e){const d=get(id),k=`${id}:${s}:${e}`,f=F[k];nxc();NC=0;curV=['p',k,id,s,e];CK=k;BR=1;ss=0;lw=0;curSeason=s;if(d.type!='video')last=id;save();bgAuto(id,k);
- const isEmb=f&&f.url&&/kodik|player|iframe/i.test(f.url);
- $('pn').innerHTML=`<div class="top"><h3>${esc(d.title)}</h3><button class="x" onclick="openD('${id}',${s})">✕</button></div>${f?(isEmb?`<div class="vw"><iframe src="${esc(f.url)}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:16px;background:#000" allowfullscreen allow="autoplay; fullscreen"></iframe></div>`:`<div class="vw" id="vw"><video id="vd" playsinline autoplay ${AU[k]?'muted':''} src="${esc(vsrc(f))}" onerror="vErr()" onloadedmetadata="rs(CK);upd(CK);okV(CK)" ontimeupdate="upd(CK)" onplay="pi();sy()" onpause="sp(CK,1);pi();sy()" onseeked="sk2()" onended="fin()"></video>${AU[k]?`<audio id="au" src="${AU[k].url}" preload="auto"></audio>`:''}<div class="gz" onclick="gz(event)"></div><div class="vt" id="vt">${vtH(d,s,e)}</div><div class="fl" id="fl"></div><button class="bp" id="bp" onclick="tg()" aria-label="Пауза">${IC.play}</button><div class="cb"><input class="sk" id="sk" type="range" min="0" max="1000" value="0" step="1" oninput="skI(this)" onchange="skE()"><div class="cr"><span id="tm">0:00</span><span class="cs"><button onclick="bk(-10)" aria-label="Назад 10 секунд">${IC.b}</button><button onclick="bk(10)" aria-label="Вперёд 10 секунд">${IC.f}</button><button id="sd" onclick="spd()" aria-label="Скорость">1×</button><button onclick="fsx()" aria-label="На весь экран">${IC.fs}</button></span></div></div></div>`):`<div class="novid">🎞<br>${FN[k]?'Загрузите заново<br><small>'+esc(FN[k])+'</small>':'Не загружена'}</div>`}<div id="pc">${pcH(id,s,e)}</div>`;$('sh').classList.add('open')}
+ $('pn').innerHTML=`<div class="top"><h3>${esc(d.title)}</h3><button class="x" onclick="openD('${id}',${s})">✕</button></div>${f?`<div class="vw" id="vw"><video id="vd" playsinline autoplay ${AU[k]?'muted':''} src="${esc(vsrc(f))}" onerror="vErr()" onloadedmetadata="rs(CK);upd(CK);okV(CK)" ontimeupdate="upd(CK)" onplay="pi();sy()" onpause="sp(CK,1);pi();sy()" onseeked="sk2()" onended="fin()"></video>${AU[k]?`<audio id="au" src="${AU[k].url}" preload="auto"></audio>`:''}<div class="gz" onclick="gz(event)"></div><div class="vt" id="vt">${vtH(d,s,e)}</div><div class="fl" id="fl"></div><button class="bp" id="bp" onclick="tg()" aria-label="Пауза">${IC.play}</button><div class="cb"><input class="sk" id="sk" type="range" min="0" max="1000" value="0" step="1" oninput="skI(this)" onchange="skE()"><div class="cr"><span id="tm">0:00</span><span class="cs"><button onclick="bk(-10)" aria-label="Назад 10 секунд">${IC.b}</button><button onclick="bk(10)" aria-label="Вперёд 10 секунд">${IC.f}</button><button id="sd" onclick="spd()" aria-label="Скорость">1×</button><button onclick="fsx()" aria-label="На весь экран">${IC.fs}</button></span></div></div></div>`:`<div class="novid">🎞<br>${FN[k]?'Загрузите заново<br><small>'+esc(FN[k])+'</small>':'Не загружена'}</div>`}<div id="pc">${pcH(id,s,e)}</div>`;$('sh').classList.add('open')}
 function closeD(){const s=$('sh');s.classList.add('out');nxc();setTimeout(()=>{s.classList.remove('open','out');curV=null;render()},220)}
 $('sh').onclick=e=>{if(e.target.id=='sh')closeD()};
 function pick(cb,multi,im,au){const i=$('fi');i.value='';i.multiple=!!multi;i.accept=im?'image/*':'';i.onchange=()=>{let fs=[...i.files];if(!im)fs=fs.filter(f=>(au?/\.(m4a|mp3|aac|opus|ogg|oga|weba|wav|flac|webm|mka)$/i:/\.(mp4|mkv|webm|m4v|mov|avi)$/i).test(f.name));if(fs.length)cb(fs);else if(i.files.length)toast(au?'Выберите аудиофайл':'Выберите видеофайл')};i.click()}
@@ -646,45 +645,6 @@ function create(){nf.title=$('ti').value.trim();if(!nf.title){$('ti').focus();re
  if(nf.files.length)assign(d,nf.files,1);if(on)putLinks(d,1,mv?[{e:0,u:list[0].u}]:list);if(on&&!mv)d.bg=1;if(nf.purl&&!nf.poster){const vd=nf.type=='video';posUrl(nf.purl.trim(),p=>{d.poster=p;save();render()},vd?640:360,vd?360:540)}if(nf.audio&&nf.type=='video')attachA(d.id+':1:1',nf.audio);tab=nf.type=='video'?'video':'all';Q='';$('q').value='';save();closeD()}
 
 applyTheme(TH,0);dedupe();applyLK();paintMe();render();sync();cloudInit();setInterval(achCheck,20000);setTimeout(achCheck,2500);$('fsb').innerHTML=IC.fs;
-
-let KRES=[];
-function kodikSearch(){
- const q=$('ti').value.trim();
- if(!q){toast('Введите название аниме');$('ti').focus();return}
- const box=$('kres');if(box)box.innerHTML='<p class="hint">Ищу в Shikimori…</p>';
- fetch('/api/kodik?q='+encodeURIComponent(q)).then(r=>r.json()).then(j=>{
-  KRES=j.results||[];
-  if(!KRES.length){if(box)box.innerHTML='<p class="hint">Ничего не найдено</p>';return}
-  box.innerHTML=`<div style="max-height:280px;overflow:auto;margin-bottom:12px;display:grid;gap:8px">`+KRES.map((it,i)=>{
-   const p=it.poster||'';
-   return `<button type="button" class="pp" style="margin:0" onclick="kodikPick(${i})"><span class="pv" style="${p?`background-image:url('${esc(p)}')`:''}">${p?'':'🎬'}</span><span style="flex:1;min-width:0"><b style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(it.title)}</b><small>${esc([it.year,it.type].filter(Boolean).join(' · '))}</small></span></button>`;
-  }).join('')+`</div>`;
- }).catch(()=>{if(box)box.innerHTML='<p class="hint">Ошибка соединения с сервером</p>'});
-}
-
-function kodikPick(idx){
- const it=KRES[idx];if(!it)return;
- const p=it.poster||'';
- const tp='cartoon';
- const totalEps = it.episodes || 1;
- const seasons={1: totalEps};
- const links=[];
- 
- const code = it.code || '';
- 
- for(let e=1; e<=totalEps; e++){
-  // Ссылка на конкретную серию на актуальном домене anilibria.fun
-  const playerUrl = code ? `https://anilibria.fun/release/${code}.html?episode=${e}` : `https://anilibria.fun/`;
-  links.push([1, e, playerUrl]);
- }
- 
- const d={id:'u'+Date.now(),type:tp,title:it.title,year:String(it.year||''),seasons,h:10+Math.random()*20|0,poster:p};
- DATA.push(d);
- links.forEach(([s,e,u])=>setLink(`${d.id}:${s}:${e}`,u));
- if(p)posUrl(p,px=>{d.poster=px;save();render()},360,540);
- tab='all';Q='';$('q').value='';save();closeD();
- toast('Добавлено: '+it.title+' ('+totalEps+' сер.) ✓');
-}
- </script>
+</script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 import os, re, json, time, mimetypes, base64, shutil, socket, ipaddress
 import urllib.request, urllib.error, threading, queue
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
-from urllib.parse import unquote, urlparse, urlsplit, parse_qs, urlencode
+from urllib.parse import unquote, urlparse, urlsplit, parse_qs
 
 HOST = "127.0.0.1"  # 127.0.0.1 = сайт виден только с этого телефона
 PORT = int(os.environ.get("TERRA_PORT") or 8080)
@@ -306,9 +306,6 @@ class H(BaseHTTPRequestHandler):
             return self.jsend({"jobs": JOBS})
         if u == "/api/proxy":
             return self.proxy(parse_qs(urlparse(self.path).query))
-        if u == "/api/kodik":
-            return self.kodik(parse_qs(urlparse(self.path).query))
-            
         if u == "/api/library":
             sweep()
             return self.jsend({"items": scan()})
@@ -391,44 +388,7 @@ class H(BaseHTTPRequestHandler):
             if j and j["state"] in ("queued", "run"):
                 j["state"] = "cancel"
         self.jsend({"ok": True})
-        
-    def kodik(self, q):
-        title = (q.get("q") or [""])[0].strip()
-        if not title:
-            return self.jsend({"results": []})
-        
-        search_url = f"https://shikimori.io/api/animes?search={urllib.parse.quote(title)}&limit=15"
-        req = urllib.request.Request(
-            search_url,
-            headers={
-                "User-Agent": "TerrakinoApp"
-            }
-        )
-        try:
-            with OPENER.open(req, timeout=10) as r:
-                data = json.loads(r.read().decode("utf-8", "ignore"))
-                results = []
-                for item in data:
-                    image_url = item.get("image", {}).get("original", "")
-                    if image_url and not image_url.startswith("http"):
-                        image_url = "https://shikimori.io" + image_url
-                    
-                    # Получаем английский алиас (код) для Anilibria
-                    code = item.get("name", "")
-                    episodes_count = item.get("episodes") or 1
-                        
-                    results.append({
-                        "title": item.get("russian") or item.get("name") or title,
-                        "year": str(item.get("aired_on", ""))[:4],
-                        "type": "Аниме-сериал" if item.get("kind") == "tv" else "Аниме-фильм",
-                        "poster": image_url,
-                        "code": code,
-                        "episodes": episodes_count
-                    })
-                return self.jsend({"results": results})
-        except Exception as e:
-            return self.jsend({"results": [], "error": str(e)})
-            
+
     def proxy(self, q):  # видео и картинки по внешней ссылке, с перемоткой (Range). Нужен, если хост не отдаёт файл напрямую
         host = (self.headers.get("Host") or "").rsplit(":", 1)[0].strip("[]").lower()
         if host not in ("127.0.0.1", "localhost"):
