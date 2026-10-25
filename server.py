@@ -396,22 +396,32 @@ class H(BaseHTTPRequestHandler):
         title = (q.get("q") or [""])[0].strip()
         if not title:
             return self.jsend({"results": []})
-        params = urlencode({
-            "token": "b7cc4293ed475c4ad1fd599d114f4435",
-            "title": title,
-            "with_material_data": "true",
-            "with_episodes": "true",
-            "limit": 20
-        })
+        
+        # Запрос к публичному поиску AnimeGO через их API
+        search_url = f"https://animego.org/api/v1/search/anime?q={urllib.parse.quote(title)}"
         req = urllib.request.Request(
-            f"https://kodikapi.com/search?{params}",
-            headers={"User-Agent": UA},
-            method="POST"
+            search_url,
+            headers={
+                "User-Agent": UA,
+                "X-Requested-With": "XMLHttpRequest",
+                "Referer": "https://animego.org/"
+            }
         )
         try:
             with OPENER.open(req, timeout=15) as r:
                 data = json.loads(r.read().decode("utf-8", "ignore"))
-                return self.jsend({"results": data.get("results", [])})
+                # AnimeGO возвращает список в поле 'data' или 'list'
+                raw_list = data.get("data") or data.get("list") or []
+                results = []
+                for item in raw_list:
+                    results.append({
+                        "title": item.get("name") or item.get("title") or title,
+                        "year": item.get("year", ""),
+                        "type": item.get("type", {}).get("title", "Сериал"),
+                        "poster": item.get("poster") or item.get("picture", ""),
+                        "url": f"https://animego.org/anime/{item.get('code', '')}"
+                    })
+                return self.jsend({"results": results})
         except Exception as e:
             return self.jsend({"results": [], "error": str(e)})
             
