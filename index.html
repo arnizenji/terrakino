@@ -666,19 +666,25 @@ function kodikPick(idx){
  const it=KRES[idx];if(!it)return;
  const p=it.poster||'';
  const tp='cartoon';
- const seasons={1:1};
+ const totalEps = it.episodes || 1;
+ 
+ // Создаем объект сезонов, где в первом сезоне сразу прописано реальное число серий
+ const seasons={1: totalEps};
  const links=[];
  
- // Используем правильные обратные кавычки для подстановки переменной названия
- const watchUrl = it.url ? it.url : `https://shikimori.io`;
- links.push([1, 1, watchUrl]);
+ const jutsuUrl = it.url || 'https://jut.su/';
+ 
+ // Генерируем ссылки на просмотр для каждой серии автоматически
+ for(let e=1; e<=totalEps; e++){
+  links.push([1, e, jutsuUrl]);
+ }
  
  const d={id:'u'+Date.now(),type:tp,title:it.title,year:String(it.year||''),seasons,h:10+Math.random()*20|0,poster:p};
  DATA.push(d);
  links.forEach(([s,e,u])=>setLink(`${d.id}:${s}:${e}`,u));
  if(p)posUrl(p,px=>{d.poster=px;save();render()},360,540);
  tab='all';Q='';$('q').value='';save();closeD();
- toast('Добавлено: '+it.title+' ✓');
+ toast('Добавлено: '+it.title+' ('+totalEps+' сер.) ✓');
 }
  </script>
 </body>
