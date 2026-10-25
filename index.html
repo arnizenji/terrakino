@@ -667,16 +667,15 @@ function kodikPick(idx){
  const p=it.poster||'';
  const tp='cartoon';
  const totalEps = it.episodes || 1;
- 
- // Создаем объект сезонов, где в первом сезоне сразу прописано реальное число серий
  const seasons={1: totalEps};
  const links=[];
  
- const jutsuUrl = it.url || 'https://jut.su/';
+ const baseUrl = it.url ? it.url.replace(/\/$/, "") : 'https://jut.su';
  
- // Генерируем ссылки на просмотр для каждой серии автоматически
+ // Генерируем правильную ссылку на каждую серию (например, .../episode-1.html)
  for(let e=1; e<=totalEps; e++){
-  links.push([1, e, jutsuUrl]);
+  const episodeUrl = `${baseUrl}/episode-${e}.html`;
+  links.push([1, e, episodeUrl]);
  }
  
  const d={id:'u'+Date.now(),type:tp,title:it.title,year:String(it.year||''),seasons,h:10+Math.random()*20|0,poster:p};
