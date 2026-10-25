@@ -413,10 +413,8 @@ class H(BaseHTTPRequestHandler):
                     if image_url and not image_url.startswith("http"):
                         image_url = "https://shikimori.io" + image_url
                     
-                    slug = item.get("name", "")
-                    jutsu_url = f"https://jut.su/{slug}/" if slug else "https://jut.su/"
-                    
-                    # Получаем количество серий (если аниме онгоинг или неизвестно, ставим 1)
+                    # Получаем английский алиас (код) для Anilibria
+                    code = item.get("name", "")
                     episodes_count = item.get("episodes") or 1
                         
                     results.append({
@@ -424,7 +422,7 @@ class H(BaseHTTPRequestHandler):
                         "year": str(item.get("aired_on", ""))[:4],
                         "type": "Аниме-сериал" if item.get("kind") == "tv" else "Аниме-фильм",
                         "poster": image_url,
-                        "url": jutsu_url,
+                        "code": code,
                         "episodes": episodes_count
                     })
                 return self.jsend({"results": results})
