@@ -3,7 +3,7 @@
 import os, re, json, time, mimetypes, base64, shutil, socket, ipaddress
 import urllib.request, urllib.error, threading, queue
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
-from urllib.parse import unquote, urlparse, urlsplit, parse_qs
+from urllib.parse import unquote, urlparse, urlsplit, parse_qs, urlencode
 
 HOST = "127.0.0.1"  # 127.0.0.1 = сайт виден только с этого телефона
 PORT = int(os.environ.get("TERRA_PORT") or 8080)
@@ -306,6 +306,9 @@ class H(BaseHTTPRequestHandler):
             return self.jsend({"jobs": JOBS})
         if u == "/api/proxy":
             return self.proxy(parse_qs(urlparse(self.path).query))
+        if u == "/api/kodik":
+            return self.kodik(parse_qs(urlparse(self.path).query))
+            
         if u == "/api/library":
             sweep()
             return self.jsend({"items": scan()})
@@ -388,7 +391,30 @@ class H(BaseHTTPRequestHandler):
             if j and j["state"] in ("queued", "run"):
                 j["state"] = "cancel"
         self.jsend({"ok": True})
-
+        
+    def kodik(self, q):
+        title = (q.get("q") or [""])[0].strip()
+        if not title:
+            return self.jsend({"results": []})
+        params = urlencode({
+            "token": "b7cc4293ed475c4ad1fd599d114f4435",
+            "title": title,
+            "with_material_data": "true",
+            "with_episodes": "true",
+            "limit": 20
+        })
+        req = urllib.request.Request(
+            f"https://kodikapi.com/search?{params}",
+            headers={"User-Agent": UA},
+            method="POST"
+        )
+        try:
+            with OPENER.open(req, timeout=15) as r:
+                data = json.loads(r.read().decode("utf-8", "ignore"))
+                return self.jsend({"results": data.get("results", [])})
+        except Exception as e:
+            return self.jsend({"results": [], "error": str(e)})
+            
     def proxy(self, q):  # видео и картинки по внешней ссылке, с перемоткой (Range). Нужен, если хост не отдаёт файл напрямую
         host = (self.headers.get("Host") or "").rsplit(":", 1)[0].strip("[]").lower()
         if host not in ("127.0.0.1", "localhost"):
