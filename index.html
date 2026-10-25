@@ -645,32 +645,6 @@ function create(){nf.title=$('ti').value.trim();if(!nf.title){$('ti').focus();re
  if(nf.files.length)assign(d,nf.files,1);if(on)putLinks(d,1,mv?[{e:0,u:list[0].u}]:list);if(on&&!mv)d.bg=1;if(nf.purl&&!nf.poster){const vd=nf.type=='video';posUrl(nf.purl.trim(),p=>{d.poster=p;save();render()},vd?640:360,vd?360:540)}if(nf.audio&&nf.type=='video')attachA(d.id+':1:1',nf.audio);tab=nf.type=='video'?'video':'all';Q='';$('q').value='';save();closeD()}
 
 applyTheme(TH,0);dedupe();applyLK();paintMe();render();sync();cloudInit();setInterval(achCheck,20000);setTimeout(achCheck,2500);$('fsb').innerHTML=IC.fs;
-
- function kodikPick(idx){
- const it=KRES[idx];if(!it)return;
- const p=it.poster||'';
- const tp='cartoon';
- const totalEps = it.episodes || 1;
- const seasons={1: totalEps};
- const links=[];
- 
- // Берем карту серий от сервера, которую он достал из Kodik API по shikimori_id
- const epsMap = it.episodes_map || {};
- 
- for(let e=1; e<=totalEps; e++){
-  // Если у Кодика есть прямая ссылка на конкретную серию — берем её, иначе формируем поисковый плеер
-  let playerUrl = epsMap[e] ? ("https:" + epsMap[e].link) : `https://kodik.info/search?shikimori_id=${it.shikimori_id}&episode=${e}`;
-  links.push([1, e, playerUrl]);
- }
- 
- const d={id:'u'+Date.now(),type:tp,title:it.title,year:String(it.year||''),seasons,h:10+Math.random()*20|0,poster:p};
- DATA.push(d);
- links.forEach(([s,e,u])=>setLink(`${d.id}:${s}:${e}`,u));
- if(p)posUrl(p,px=>{d.poster=px;save();render()},360,540);
- tab='all';Q='';$('q').value='';save();closeD();
- toast('Добавлено: '+it.title+' ('+totalEps+' сер.) ✓');
- }
- 
 </script>
 </body>
 </html>
