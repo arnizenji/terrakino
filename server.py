@@ -396,21 +396,32 @@ class H(BaseHTTPRequestHandler):
         title = (q.get("q") or [""])[0].strip()
         if not title:
             return self.jsend({"results": []})
+        
+        search_url = f"https://shikimori.me/api/animes?search={urllib.parse.quote(title)}&limit=15"
+        req = urllib.request.Request(
+            search_url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) TerrakinoApp",
+                "Accept": "application/json"
+            }
+        )
         try:
-            from anime_parsers_ru import ShikimoriParser
-            parser = ShikimoriParser()
-            # Используем метод search из официальной инструкции библиотеки
-            raw_list = parser.search(title) or []
-            results = []
-            for item in raw_list:
-                results.append({
-                    "title": item.get("title") or title,
-                    "year": str(item.get("year", "")),
-                    "type": str(item.get("type", "Сериал")),
-                    "poster": item.get("poster", ""),
-                    "url": item.get("link", "")
-                })
-            return self.jsend({"results": results})
+            with OPENER.open(req, timeout=15) as r:
+                data = json.loads(r.read().decode("utf-8", "ignore"))
+                results = []
+                for item in data:
+                    image_url = item.get("image", {}).get("original", "")
+                    if image_url and not image_url.startswith("http"):
+                        image_url = "https://shikimori.me" + image_url
+                        
+                    results.append({
+                        "title": item.get("russian") or item.get("name") or title,
+                        "year": str(item.get("aired_on", ""))[:4],
+                        "type": "Аниме-сериал" if item.get("kind") == "tv" else "Аниме-фильм",
+                        "poster": image_url,
+                        "url": f"https://shikimori.me{item.get('url', '')}"
+                    })
+                return self.jsend({"results": results})
         except Exception as e:
             return self.jsend({"results": [], "error": str(e)})
             
