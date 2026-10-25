@@ -1,0 +1,65 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - project.zip
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      KS: ${{ secrets.KEYSTORE_B64 }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Проверка файлов и ключа
+        run: |
+          if [ -z "$KS" ]; then echo "::error::Нет секрета KEYSTORE_B64 (Settings > Secrets and variables > Actions)"; exit 1; fi
+          if [ ! -f project.zip ]; then echo "::error::В корне репозитория нет файла project.zip"; exit 1; fi
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Распаковка проекта
+        run: |
+          mkdir build_src
+          unzip -q project.zip -d build_src
+          SITE=build_src/app/src/main/assets/site
+          for f in index.html server.py version.txt; do
+            if [ -f "$f" ]; then cp "$f" "$SITE/$f"; fi
+          done
+          sed -i "s#__REPO__#${GITHUB_REPOSITORY}#" "$SITE/config.json"
+          echo "$KS" | base64 -d > build_src/app/terra.p12
+
+      - name: Сборка
+        working-directory: build_src
+        env:
+          APP_VERSION_CODE: ${{ github.run_number }}
+        run: gradle --no-daemon assembleRelease
+
+      - name: Подготовка APK
+        run: cp build_src/app/build/outputs/apk/release/app-release.apk terrakino.apk
+
+      - name: Публикация
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Терракино, сборка ${{ github.run_number }}
+          files: terrakino.apk
+          fail_on_unmatched_files: true
+          
