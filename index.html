@@ -662,29 +662,42 @@ function kodikSearch(){
  }).catch(()=>{if(box)box.innerHTML='<p class="hint">Ошибка соединения с сервером</p>'});
 }
 
-function kodikPick(idx){
- const it=KRES[idx];if(!it)return;
- const p=it.poster||'';
- const tp='cartoon';
- const totalEps = it.episodes || 1;
- const seasons={1: totalEps};
- const links=[];
- 
- const baseUrl = it.url ? it.url.replace(/\/$/, "") : 'https://jut.su';
- 
- // Генерируем правильную ссылку на каждую серию (например, .../episode-1.html)
- for(let e=1; e<=totalEps; e++){
-  const episodeUrl = `${baseUrl}/episode-${e}.html`;
-  links.push([1, e, episodeUrl]);
- }
- 
- const d={id:'u'+Date.now(),type:tp,title:it.title,year:String(it.year||''),seasons,h:10+Math.random()*20|0,poster:p};
- DATA.push(d);
- links.forEach(([s,e,u])=>setLink(`${d.id}:${s}:${e}`,u));
- if(p)posUrl(p,px=>{d.poster=px;save();render()},360,540);
- tab='all';Q='';$('q').value='';save();closeD();
- toast('Добавлено: '+it.title+' ('+totalEps+' сер.) ✓');
-}
+def kodik(self, q):
+        title = (q.get("q") or [""])[0].strip()
+        if not title:
+            return self.jsend({"results": []})
+        
+        search_url = f"https://shikimori.io/api/animes?search={urllib.parse.quote(title)}&limit=15"
+        req = urllib.request.Request(
+            search_url,
+            headers={
+                "User-Agent": "TerrakinoApp"
+            }
+        )
+        try:
+            with OPENER.open(req, timeout=10) as r:
+                data = json.loads(r.read().decode("utf-8", "ignore"))
+                results = []
+                for item in data:
+                    image_url = item.get("image", {}).get("original", "")
+                    if image_url and not image_url.startswith("http"):
+                        image_url = "https://shikimori.io" + image_url
+                    
+                    # Получаем английский алиас (код) для Anilibria
+                    code = item.get("name", "")
+                    episodes_count = item.get("episodes") or 1
+                        
+                    results.append({
+                        "title": item.get("russian") or item.get("name") or title,
+                        "year": str(item.get("aired_on", ""))[:4],
+                        "type": "Аниме-сериал" if item.get("kind") == "tv" else "Аниме-фильм",
+                        "poster": image_url,
+                        "code": code,
+                        "episodes": episodes_count
+                    })
+                return self.jsend({"results": results})
+        except Exception as e:
+            return self.jsend({"results": [], "error": str(e)})
  </script>
 </body>
 </html>
