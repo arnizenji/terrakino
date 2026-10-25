@@ -669,12 +669,9 @@ function kodikPick(idx){
  const seasons={1:1};
  const links=[];
  
- // Вместо голой ссылки на Shikimori, формируем плеер или заглушку с поиском по базе
- // Здесь мы можем подставить шаблон плеера или ссылку на поиск серии
- const animeTitle = encodeURIComponent(it.title);
- 
- // Добавляем первую серию с рабочей ссылкой на плеер (например, через публичные каталоги или заглушку для вставки)
- links.push([1, 1, `https://kodik.info/find-by-name?title=${animeTitle}`]);
+ // Используем правильные обратные кавычки для подстановки переменной названия
+ const watchUrl = it.url ? it.url : `https://shikimori.io`;
+ links.push([1, 1, watchUrl]);
  
  const d={id:'u'+Date.now(),type:tp,title:it.title,year:String(it.year||''),seasons,h:10+Math.random()*20|0,poster:p};
  DATA.push(d);
