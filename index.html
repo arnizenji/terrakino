@@ -540,8 +540,22 @@ function flip(k){W[k]?delete W[k]:W[k]=1;if(W[k]){delete POS[k];sv('pos',POS)}sa
  const dl=delOf(k.split(':')[0]);
  if(SRV&&SP[k]){const on=!!W[k];if(on&&dl==0){fetch('/api/del',{method:'POST',body:JSON.stringify({path:SP[k],after:0})}).catch(()=>{});delete F[k];delete SP[k];delete FN[k];delete AU[k];applyLK();save()}else fetch('/api/undel',{method:'POST',body:JSON.stringify({path:SP[k]})}).catch(()=>{})}}
 function tog(k,id){const go=()=>{flip(k);AN=0;nk=k;drawD(get(id));render()};W[k]?go():ask(k,go)}
-function play(id,s,e){const d=get(id),k=`${id}:${s}:${e}`,f=F[k];nxc();NC=0;curV=['p',k,id,s,e];CK=k;BR=1;ss=0;lw=0;curSeason=s;if(d.type!='video')last=id;save();if(f&&!isEmb(f.url))bgAuto(id,k);
+function play(id,s,e){
+ const d=get(id),k=`${id}:${s}:${e}`,f=F[k];
+ nxc();NC=0;curV=['p',k,id,s,e];CK=k;BR=1;ss=0;lw=0;curSeason=s;
+ if(d.type!='video')last=id;
+ save();
+ if(f&&!isEmb(f.url))bgAuto(id,k);
  const emb=f&&isEmb(f.url);
+ 
+ $('pn').innerHTML=`<div class="top"><h3>${esc(d.title)}</h3><button class="x" onclick="openD('${id}',${s})">✕</button></div>`+
+ (f?(emb?`<div class="vw" id="vw" style="aspect-ratio:16/9"><iframe src="${esc(f.url)}" style="width:100%;height:100%;border:0" allowfullscreen allow="autoplay *; fullscreen *"></iframe></div>`:
+ `<div class="vw" id="vw"><video id="vd" playsinline autoplay ${AU[k]?'muted':''} src="${esc(vsrc(f))}" onerror="vErr()" onloadedmetadata="rs(CK);upd(CK);okV(CK)" ontimeupdate="upd(CK)" onplay="pi();sy()" onpause="sp(CK,1);pi();sy()" onseeked="sk2()" onended="fin()"></video>${AU[k]?`<audio id="au" src="${AU[k].url}" preload="auto"></audio>`:''}<div class="gz" onclick="gz(event)"></div><div class="vt" id="vt">${vtH(d,s,e)}</div><div class="fl" id="fl"></div><button class="bp" id="bp" onclick="tg()" aria-label="Пауза">${IC.play}</button><div class="cb"><input class="sk" id="sk" type="range" min="0" max="1000" value="0" step="1" oninput="skI(this)" onchange="skE()"><div class="cr"><span id="tm">0:00</span><span class="cs"><button onclick="bk(-10)" aria-label="Назад 10 секунд">${IC.b}</button><button onclick="bk(10)" aria-label="Вперёд 10 секунд">${IC.f}</button><button id="sd" onclick="spd()" aria-label="Скорость">1×</button><button onclick="fsx()" aria-label="На весь экран">${IC.fs}</button></span></div></div></div>`):
+ `<div class="novid">🎞<br>${FN[k]?'Загрузите заново<br><small>'+esc(FN[k])+'</small>':'Не загружена'}</div>`)+
+ `<div id="pc">${pcH(id,s,e)}</div>`;
+ $('sh').classList.add('open');
+}
+
  $('pn').innerHTML=`<div class="top"><h3>${esc(d.title)}</h3><button class="x" onclick="openD('${id}',${s})">✕</button></div>${f?(emb?`<div class="vw" id="vw" style="aspect-ratio:16/9"><iframe src="${esc(f.url)}" style="width:100%;height:100%;border:0" allowfullscreen allow="autoplay *; fullscreen *"></iframe></div>`:`<div class="vw" id="vw"><video id="vd" playsinline autoplay ${AU[k]?'muted':''} src="${esc(vsrc(f))}" onerror="vErr()" onloadedmetadata="rs(CK);upd(CK);okV(CK)" ontimeupdate="upd(CK)" onplay="pi();sy()" onpause="sp(CK,1);pi();sy()" onseeked="sk2()" onended="fin()"></video>${AU[k]?`<audio id="au" src="${AU[k].url}" preload="auto"></audio>`:''}<div class="gz" onclick="gz(event)"></div><div class="vt" id="vt">${vtH(d,s,e)}</div><div class="fl" id="fl"></div><button class="bp" id="bp" onclick="tg()" aria-label="Пауза">${IC.play}</button><div class="cb"><input class="sk" id="sk" type="range" min="0" max="1000" value="0" step="1" oninput="skI(this)" onchange="skE()"><div class="cr"><span id="tm">0:00</span><span class="cs"><button onclick="bk(-10)" aria-label="Назад 10 секунд">${IC.b}</button><button onclick="bk(10)" aria-label="Вперёд 10 секунд">${IC.f}</button><button id="sd" onclick="spd()" aria-label="Скорость">1×</button><button onclick="fsx()" aria-label="На весь экран">${IC.fs}</button></span></div></div></div>`):`<div class="novid">🎞<br>${FN[k]?'Загрузите заново<br><small>'+esc(FN[k])+'</small>':'Не загружена'}</div>`}<div id="pc">${pcH(id,s,e)}</div>`;$('sh').classList.add('open')}
 function closeD(){const s=$('sh');s.classList.add('out');nxc();setTimeout(()=>{s.classList.remove('open','out');curV=null;render()},220)}
 $('sh').onclick=e=>{if(e.target.id=='sh')closeD()};
