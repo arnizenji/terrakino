@@ -4,6 +4,17 @@ import os, re, json, time, mimetypes, base64, shutil, socket, ipaddress
 import urllib.request, urllib.error, threading, queue
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import unquote, urlparse, urlsplit, parse_qs
+from urllib.parse import quote
+
+def decrypt_token(tkn: str) -> str:
+    p1 = tkn[:int(len(tkn)/2)][::-1]
+    p2 = tkn[int(len(tkn)/2):][::-1]
+    p1 = base64.b64decode(p1.encode('utf-8')).decode('utf-8')
+    p2 = base64.b64decode(p2.encode('utf-8')).decode('utf-8')
+    return p2 + p1
+
+ENCRYPTED_TOKEN = "==QO0ADM3kTZmRTNiRDNjFDM==QOxkDMzQjZ4ADZ4YzNhZTN"
+KODIK_TOKEN = decrypt_token(ENCRYPTED_TOKEN)
 
 HOST = "127.0.0.1"  # 127.0.0.1 = сайт виден только с этого телефона
 PORT = int(os.environ.get("TERRA_PORT") or 8080)
@@ -278,57 +289,104 @@ class H(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
 
-    def search_handler(self, q):
+def kodik_search(self, q):
         title = (q.get("q") or [""])[0].strip()
+        typ = (q.get("type") or ["cartoon"])[0].strip()
         if not title:
             return self.jsend({"results": []})
-        
-        search_url = f"https://shikimori.io/api/animes?search={urllib.parse.quote(title)}&limit=10"
-        req = urllib.request.Request(search_url, headers={"User-Agent": "TerrakinoApp"})
+        results = []
         try:
-            with OPENER.open(req, timeout=10) as r:
-                shiki_data = json.loads(r.read().decode("utf-8", "ignore"))
-                results = []
+            if typ in ("cartoon", "anime"):
+                # 1. Аниме: берем постеры и инфо с Shikimori, а серии и плеер — с Kodik
+                s_url = f"https://shikimori.one/api/animes?search={quote(title)}&limit=12"
+                req = urllib.request.Request(s_url, headers={"User-Agent": UA})
+                with OPENER.open(req, timeout=10) as r:
+                    shiki_data = json.loads(r.read().decode("utf-8", "ignore"))
                 for item in shiki_data:
-                    image_url = item.get("image", {}).get("original", "")
-                    if image_url and not image_url.startswith("http"):
-                        image_url = "https://shikimori.io" + image_url
-                    
                     shiki_id = item.get("id")
-                    rus_title = item.get("russian") or item.get("name") or title
-                    year = str(item.get("aired_on", ""))[:4]
-                    kind = "Аниме-сериал" if item.get("kind") == "tv" else "Аниме-фильм"
-                    fallback_episodes = item.get("episodes") or 1
-                    
-                    episodes_count = fallback_episodes
-                    episodes_dict = {}
-                    
+                    img = item.get("image", {}).get("original", "")
+                    if img and not img.startswith("http"):
+                        img = "https://shikimori.one" + img
+                    rus = item.get("russian") or item.get("name") or title
+                    year = str(item.get("aired_on") or "")[:4]
+                    is_mv = item.get("kind") == "movie"
+                    fb_eps = 1 if is_mv else (item.get("episodes") or item.get("episodes_aired") or 12)
+                    seasons_out = {"1": fb_eps}
+                    eps_map = {}
                     if shiki_id:
-                        kodik_url = f"https://kodik-api.com/search?token={KODIK_TOKEN}&shikimori_id={shiki_id}&with_episodes=true"
-                        k_req = urllib.request.Request(kodik_url, headers={"User-Agent": "TerrakinoApp"})
+                        k_url = f"https://kodik-api.com/search?token={KODIK_TOKEN}&shikimori_id={shiki_id}&with_episodes=true&with_material_data=true"
                         try:
-                            with OPENER.open(k_req, timeout=5) as k_resp:
-                                k_data = json.loads(k_resp.read().decode("utf-8", "ignore"))
-                                k_results = k_data.get("results", [])
-                                if k_results:
-                                    best_match = k_results[0]
-                                    episodes_count = best_match.get("episodes_count") or fallback_episodes
-                                    seasons = best_match.get("seasons", {})
-                                    if seasons and "1" in seasons:
-                                        episodes_dict = seasons["1"].get("episodes", {})
+                            with OPENER.open(urllib.request.Request(k_url, headers={"User-Agent": UA}), timeout=6) as kr:
+                                kd = json.loads(kr.read().decode("utf-8", "ignore"))
+                                kres = kd.get("results") or []
+                                if kres:
+                                    best = kres[0]
+                                    st = best.get("seasons") or {}
+                                    if st:
+                                        seasons_out = {}
+                                        for s_num, s_obj in st.items():
+                                            ep_dict = s_obj.get("episodes") or {}
+                                            seasons_out[str(s_num)] = max([int(k) for k in ep_dict.keys() if str(k).isdigit()] or [1])
+                                            for e_num, e_val in ep_dict.items():
+                                                lnk = e_val.get("link") if isinstance(e_val, dict) else e_val
+                                                if lnk:
+                                                    eps_map[f"{s_num}:{e_num}"] = ("https:" + lnk) if str(lnk).startswith("//") else str(lnk)
+                                    elif best.get("link"):
+                                        lnk = best["link"]
+                                        eps_map["1:1"] = ("https:" + lnk) if str(lnk).startswith("//") else str(lnk)
+                                        seasons_out = {"1": 1}
                         except Exception:
                             pass
-                            
                     results.append({
-                        "title": rus_title,
+                        "title": rus,
                         "year": year,
-                        "type": kind,
-                        "poster": image_url,
-                        "shikimori_id": shiki_id,
-                        "episodes": episodes_count,
-                        "episodes_map": episodes_dict
+                        "type": "movie" if is_mv else "cartoon",
+                        "poster": img,
+                        "seasons": seasons_out,
+                        "episodes_map": eps_map
                     })
-                return self.jsend({"results": results})
+            else:
+                # 2. Фильмы и Сериалы: ищем напрямую в Kodik API
+                k_types = "foreign-movie,russian-movie" if typ == "movie" else "foreign-serial,russian-serial"
+                k_url = f"https://kodik-api.com/search?token={KODIK_TOKEN}&title={quote(title)}&types={k_types}&with_episodes=true&with_material_data=true&limit=20"
+                req = urllib.request.Request(k_url, headers={"User-Agent": UA})
+                with OPENER.open(req, timeout=10) as kr:
+                    kd = json.loads(kr.read().decode("utf-8", "ignore"))
+                seen = set()
+                for item in (kd.get("results") or []):
+                    rus = item.get("title") or title
+                    year = str(item.get("year") or "")
+                    key = (rus.lower(), year)
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    md = item.get("material_data") or {}
+                    img = md.get("poster_url") or ""
+                    st = item.get("seasons") or {}
+                    seasons_out = {"1": 1}
+                    eps_map = {}
+                    if st and typ != "movie":
+                        seasons_out = {}
+                        for s_num, s_obj in st.items():
+                            ep_dict = s_obj.get("episodes") or {}
+                            seasons_out[str(s_num)] = max([int(k) for k in ep_dict.keys() if str(k).isdigit()] or [1])
+                            for e_num, e_val in ep_dict.items():
+                                lnk = e_val.get("link") if isinstance(e_val, dict) else e_val
+                                if lnk:
+                                    eps_map[f"{s_num}:{e_num}"] = ("https:" + lnk) if str(lnk).startswith("//") else str(lnk)
+                    else:
+                        lnk = item.get("link") or ""
+                        if lnk:
+                            eps_map["1:1"] = ("https:" + lnk) if str(lnk).startswith("//") else str(lnk)
+                    results.append({
+                        "title": rus,
+                        "year": year,
+                        "type": typ,
+                        "poster": img,
+                        "seasons": seasons_out,
+                        "episodes_map": eps_map
+                    })
+            return self.jsend({"results": results})
         except Exception as e:
             return self.jsend({"results": [], "error": str(e)})
 
@@ -372,8 +430,8 @@ class H(BaseHTTPRequestHandler):
         if u == "/api/library":
             sweep()
             return self.jsend({"items": scan()})
-        if u == "/api/kodik" or u == "/api/search":
-            return self.search_handler(parse_qs(urlparse(self.path).query))
+        if u in ("/api/kodik", "/api/search"):
+            return self.kodik_search(parse_qs(urlparse(self.path).query))
         f = os.path.join(APP, "index.html") if u in ("/", "/index.html") else safe(u.lstrip("/"))
         if not f or not os.path.isfile(f):
             return self.send_error(404)
