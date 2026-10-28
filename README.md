@@ -22,7 +22,7 @@ Posters · watch progress · offline and online · ad-free
 
 ---
 
-*Read this in other languages: [English](README.md), [Русский](README.ru.md).*
+*Read this in other languages: [English](README.md), [Русский](README_ru.md).*
 
 ## ✨ Features
 
