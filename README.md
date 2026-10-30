@@ -42,9 +42,9 @@
 | 📊 **Статистика** | Часы просмотра, серия дней подряд, любимые тайтлы |
 | 🎨 **22 цветовые темы** | 14 светлых и 8 тёмных, есть чисто чёрная для экранов AMOLED |
 | 🖼️ **Персонализация** | Рамки для аватара, титулы, ник |
-| 👤 **Профиль** | Cloud sync for your library, watch progress, stats, and settings |
-| 🤝 **Friends** | Send and accept friend requests by username |
-| 🍿 **Watch together** | Join a room by code and watch the host's live video stream |
+| 👤 **Профиль** | Облачная синхронизация вашей библиотеки, прогресса просмотра, статистики и настроек |
+| 🤝 **Друзья** | Отправка и принятие запросов в друзья по имени пользователя |
+| 🍿 **Смотрим вместе** | Присоединяйтесь к комнате по коду и смотрите прямую трансляцию видео от организатора |
 
 ---
 
@@ -258,19 +258,18 @@
 
 ---
 
-## 🆕 What's new · version 32
+## 🆕 Что нового · версия 2.1
 
-- **Cloud profile:** your library, watched episodes, playback positions, watch time, stats, achievements, and settings sync to your account across devices.
-- **Your media stays yours:** posters, avatars, and video files are not synced; local videos stay on your device.
-- **Quick access:** dedicated Friends (👥) and Watch Together (🍿) buttons in the app header.
-- **Friends:** send and accept friend requests by username.
-- **Watch rooms:** create a room and invite a friend with a short code.
-- **Live video sharing:** the host streams video and audio directly from the player; guests do not need their own copy of the media.
-- **Synchronized playback:** the host controls playback, pause, and seeking for everyone in the room.
-- **Peer-to-peer delivery:** the video is sent over WebRTC and is not uploaded to cloud storage. Room and connection signaling use Supabase.
+- **Облачный профиль:** ваша медиатека, просмотренные эпизоды, позиции воспроизведения, время просмотра, статистика, достижения и настройки синхронизируются с вашей учетной записью на всех устройствах.
+- **Ваш контент остается у вас:** постеры, аватары и видеофайлы не синхронизируются; локальные видео остаются на вашем устройстве.
+- **Быстрый доступ:** в заголовке приложения появились кнопки «Друзья» (👥) и «Смотреть вместе» (🍿).
+- **Друзья:** отправляйте и принимайте запросы на добавление в друзья по имени пользователя.
+- **Комнаты для совместного просмотра:** создавайте комнату и приглашайте друзей с помощью короткого кода.
+- **Трансляция видео:** ведущий транслирует видео и аудио прямо из плеера — гостям не нужно иметь собственный файл с видео.
+- **Синхронизированное воспроизведение:** ведущий управляет воспроизведением, паузой и перемоткой для всех участников комнаты.
+- **Технология P2P (peer-to-peer):** видео передается напрямую через WebRTC и не загружается в облачное хранилище. Для организации комнат и установления соединения используется платформа Supabase.
 
-The host must keep Terrakino open and have enough upload bandwidth. Some networks may require a TURN relay. Apply the current Terrakino database schema in Supabase SQL Editor to enable cloud profiles and social features.
-
+Ведущему необходимо держать приложение Terrakino открытым; также требуется достаточная скорость исходящего интернет-соединения. В некоторых сетях может потребоваться использование TURN-реле. Чтобы активировать облачные профили и социальные функции, примените текущую схему базы данных Terrakino в SQL-редакторе Supabase.
 ---
 
 ## ⚖️ Права
