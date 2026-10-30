@@ -43,6 +43,8 @@
 | 🎨 **22 цветовые темы** | 14 светлых и 8 тёмных, есть чисто чёрная для экранов AMOLED |
 | 🖼️ **Персонализация** | Рамки для аватара, титулы, ник |
 | 👤 **Профиль** | Ваш аккаунт и перенос данных на другой телефон |
+| 🤝 **Friends** | Send and accept friend requests by username |
+| 🍿 **Watch together** | Join a room by code and watch the host's live video stream |
 
 ---
 
@@ -253,6 +255,18 @@
 
 Включите **Профиль → Приложение → «Перенос из «Загрузок»» → Включить** и разрешите доступ ко всем файлам. Перенос работает для папок «Загрузки», «Загрузки/Telegram», Movies и Telegram/Telegram Video.
 </details>
+
+---
+
+## 🆕 What's new · version 31
+
+- **Friends:** send and accept friend requests by username.
+- **Watch rooms:** create a room and invite a friend with a short code.
+- **Live video sharing:** the host streams video and audio directly from the player; guests do not need their own copy of the media.
+- **Synchronized playback:** the host controls playback, pause, and seeking for everyone in the room.
+- **Peer-to-peer delivery:** the video is sent over WebRTC and is not uploaded to cloud storage. Room and connection signaling use Supabase.
+
+The host must keep Terrakino open and have enough upload bandwidth. Some networks may require a TURN relay. Apply `social_watch.sql` to the Supabase project once to enable friends and rooms.
 
 ---
 
