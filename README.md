@@ -1,153 +1,267 @@
 <div align="center">
 
-<img src="icon.png" width="128" alt="Terrakino">
+# 🎬 Терракино
 
-# Terrakino
+**Твои сериалы, фильмы и мультики в одном приложении**
 
-**Your series, movies, and cartoons in one app**
-
-Posters · watch progress · offline and online · ad-free
+Постеры · прогресс просмотра · офлайн и онлайн · без рекламы
 
 <br>
 
-[![Download APK](https://img.shields.io/badge/⬇_Download_APK-C65D3B?style=for-the-badge&logo=android&logoColor=white)](../../releases/latest)
+[![Скачать APK](https://img.shields.io/badge/⬇_Скачать_APK-C65D3B?style=for-the-badge&logo=android&logoColor=white)](../../releases/latest)
 
 ![Android](https://img.shields.io/badge/Android-7.0+-3DDC84?style=flat-square&logo=android&logoColor=white)
-![Architecture](https://img.shields.io/badge/arm64-64--bit-555?style=flat-square)
-![Ads](https://img.shields.io/badge/Ads-none-success?style=flat-square)
-![Offline](https://img.shields.io/badge/Works-offline-blue?style=flat-square)
-![Themes](https://img.shields.io/badge/Themes-22-C65D3B?style=flat-square)
+![Архитектура](https://img.shields.io/badge/arm64-64--bit-555?style=flat-square)
+![Реклама](https://img.shields.io/badge/Реклама-нет-success?style=flat-square)
+![Офлайн](https://img.shields.io/badge/Работает-офлайн-blue?style=flat-square)
+![Темы](https://img.shields.io/badge/Тем-22-C65D3B?style=flat-square)
 
 </div>
 
 ---
 
-*Read this in other languages: [English](README.md), [Русский](README_ru.md).*
+## 📑 Содержание
 
-## ✨ Features
+[✨ Возможности](#-возможности) · [📲 Установка](#-как-скачать-и-установить) · [📖 Как пользоваться](#-как-пользоваться) · [🔄 Обновление](#-как-обновить) · [🔐 Разрешения](#-зачем-приложению-разрешения) · [❓ Вопросы](#-частые-вопросы)
+
+---
+
+## ✨ Возможности
 
 | | |
 |---|---|
-| 🎬 **Catalog** | Series, movies, cartoons, and "More". Posters, search, favorites |
-| ▶️ **Smart Player** | Double tap ±10 seconds, playback speed, full screen, auto-play next episode |
-| 💡 **Screen Stays On** | The screen remains active while the video is playing, just like on YouTube |
-| 🕒 **Continue Watching** | Remembers the exact episode and minute where you left off |
-| 📱 **Offline** | Files are stored on your phone, no internet required |
-| 🔗 **Online** | Watch an episode or movie via a direct video link |
-| ⬇️ **Background Downloads** | Watch one episode while the others download automatically |
-| ⚡ **Instant Transfer** | Episodes from "Downloads" are moved instantly, not copied |
-| 🏆 **Achievements** | 15 awards: "Marathoner", "A Week in a Row", "Night Viewer", and more |
-| 📊 **Statistics** | Watch hours, daily streaks, favorite titles |
-| 🎨 **22 Color Themes** | 14 light and 8 dark themes, including pure black for AMOLED screens |
-| 🖼️ **Personalization** | Avatar frames, titles, nicknames |
-| 👤 **Profile** | Your account and data transfer to another phone |
+| 🎬 **Каталог** | Сериалы, фильмы, мультики и «Ещё». Постеры, поиск, избранное |
+| ▶️ **Умный плеер** | Двойное касание ±10 секунд, скорость, полный экран, следующая серия подряд |
+| 💡 **Экран не гаснет** | Пока идёт видео, экран остаётся включённым, как на YouTube |
+| 🕒 **Продолжить** | Помнит, на какой серии и минуте вы остановились |
+| 📱 **Офлайн** | Файлы лежат на телефоне, интернет не нужен |
+| 🔗 **Онлайн** | Серия или фильм по прямой ссылке на видео |
+| ⬇️ **Фоновая докачка** | Смотрите одну серию, остальные скачиваются сами |
+| ⚡ **Мгновенный перенос** | Серии из «Загрузок» переносятся, а не копируются |
+| 🏆 **Достижения** | 15 наград: «Марафонец», «Неделя подряд», «Ночной зритель» и другие |
+| 📊 **Статистика** | Часы просмотра, серия дней подряд, любимые тайтлы |
+| 🎨 **22 цветовые темы** | 14 светлых и 8 тёмных, есть чисто чёрная для экранов AMOLED |
+| 🖼️ **Персонализация** | Рамки для аватара, титулы, ник |
+| 👤 **Профиль** | Ваш аккаунт и перенос данных на другой телефон |
 
-### 🎨 Themes
+---
 
-| ☀️ Light | 🌙 Dark |
+## 📲 Как скачать и установить
+
+1. **Откройте** [страницу релизов](../../releases/latest) и нажмите на файл **`terrakino.apk`** в разделе *Assets*.
+2. **Скачайте** файл. Если Chrome предупредит о файле, выберите *«Всё равно скачать»*.
+3. **Откройте** скачанный файл. Телефон попросит разрешить установку из этого источника: включите разрешение для браузера и вернитесь назад.
+4. **Подтвердите** установку. Если появится предупреждение Play Protect, нажмите *«Всё равно установить»*.
+5. **Запустите** «Терракино» и разрешите уведомления и доступ к файлам, как попросит приложение.
+
+> 📌 Нужен **Android 7.0 и новее** и 64-битный процессор (подходит почти любой телефон последних лет).
+
+---
+
+## 📖 Как пользоваться
+
+### 🏠 Главный экран
+
+| Что | Как |
 |---|---|
-| Terra, Sage, Ocean, Plum, Ochre, Lavender, Rose, Mint, Sky, Peach, Lemon, Berry, Slate, Paper | Cocoa, Midnight, Graphite, Forest, Bordeaux, Sunset, Black, Depth |
+| 🗂️ **Вкладки** | Вверху: *Все*, *Сериалы*, *Фильмы*, *Мульты*, *Ещё* |
+| 🔎 **Поиск** | Строка «Поиск по каталогу» под вкладками |
+| ▶️ **Продолжить** | Большая кнопка сверху: откроет следующую непросмотренную серию с того места, где остановились |
+| ⭐ **Избранное** | Звёздочка на постере. Избранное всегда стоит в начале списка |
+| ➕ **Добавить** | Круглая кнопка в правом нижнем углу |
+| 👤 **Профиль** | Круглая кнопка с аватаром вверху справа |
+| 📊 **Полоска под постером** | Сколько серий уже просмотрено |
 
-You can change the theme at any time: **Profile → Site Color**. The colors of the phone's system panels will adapt to the selected theme.
+### ➕ Как добавить сериал или фильм
 
-### Icons in the Episode List
+1. Нажмите **➕**.
+2. Выберите тип: **Сериал**, **Фильм**, **Мульт** или **Ещё** (для коротких видео, к ним можно добавить отдельную звуковую дорожку 🎧).
+3. Впишите название.
+4. Выберите режим и действуйте по одному из двух сценариев ниже.
+5. По желанию добавьте постер: **из галереи** или **по ссылке на картинку**.
+6. Нажмите **Добавить**.
 
-| Icon | Meaning |
+#### 📁 Офлайн: файлы с телефона
+
+1. Выберите режим **📁 Офлайн**. Для сериала задайте число сезонов и серий в каждом.
+2. Нажмите **«Выбрать файлы»** и отметьте видео. Лучше сразу все серии.
+3. Серии встанут по номерам из названий файлов (`S01E05`, `1x05`), а если номеров нет, то по порядку.
+4. Если файлы лежат в «Загрузках», Telegram или Movies, они **переедут** в библиотеку и исчезнут из старого места.
+
+> 💡 Позже добавить файлы можно в самой карточке: **📁 Добавить файлы в сезон**.
+
+#### 🔗 Онлайн: просмотр по ссылке
+
+1. Выберите режим **🔗 Онлайн**.
+2. Для фильма вставьте одну ссылку. Для сериала вставьте ссылки на серии, **по одной на строку**. Чтобы указать номер серии, напишите его перед ссылкой: `5 https://…`
+3. Нужна **прямая ссылка на видеофайл** (например, `.mp4`).
+4. Видео не копируется на телефон: приложение проигрывает его по ссылке, без рекламы.
+
+> 💡 Добавить ссылки позже можно в карточке: **🔗 Добавить по ссылке**. Для одной серии откройте её и нажмите **«Вставить ссылку»**.
+
+### 🎞️ Карточка сериала
+
+Нажмите на постер, и откроется список серий.
+
+| Что | Как |
 |---|---|
-| 📱 On phone | The episode is stored as a file, no link needed |
-| 🔗 Online | The episode plays via a link |
-| ⬇ Downloading | The episode is currently downloading to your phone |
-| ⚠ Update link | The link is broken or expired, insert a new one |
+| 📑 **Сезоны** | Вкладки «Сезон 1, 2, …». Кнопка **＋** добавляет новый сезон |
+| ▶️ **Открыть серию** | Нажмите на строку серии |
+| ✅ **Отметить просмотренной** | Кружок с галочкой справа. Просмотренные серии становятся бледнее |
+| 🔢 **Число серий** | Счётчик под списком: **−** и **+** или впишите число |
+| 🖼️ **Сменить постер** | Нажмите на маленький постер в шапке или **🖼 Постер по ссылке** |
+| ⭐ **Избранное** | Звёздочка в шапке |
+| 🗑️ **Удалить** | Внизу: **«Удалить из каталога»**, нажать нужно дважды |
 
----
+Значки рядом с названием серии:
 
-## 📲 How to Download and Install
-
-1. **Open** the [releases page](../../releases/latest) and tap on the **`terrakino.apk`** file in the *Assets* section.
-2. **Download** the file. If Chrome warns you about the file type, select *"Download anyway"*.
-3. **Open** the downloaded file. Your phone will ask for permission to install from this source: enable the permission for your browser and go back.
-4. **Confirm** the installation. If a Play Protect warning appears, tap *"Install anyway"*.
-5. **Launch** "Terrakino" and allow notifications and file access as requested by the app.
-
-> 📌 Requires **Android 7.0 or newer** and a 64-bit processor (almost any smartphone from recent years will work).
-
----
-
-## 🚀 Getting Started
-
-1. Tap **➕** in the bottom right corner.
-2. Select the type: **series**, **movie**, **cartoon**, or **more**.
-3. Choose the mode:
-   - **📁 Offline:** select files from your phone. Episodes from the "Downloads" folder will be moved to the library automatically.
-   - **🔗 Online:** paste a video link (for series, one per line).
-4. Optionally, add a poster from your gallery or via a link.
-5. Open the title card, tap on an episode, and enjoy. A ✓ mark indicates watched content.
-6. Check out your **Profile**: find achievements, statistics, and theme settings there.
-
----
-
-## 🔄 How to Update
-
-Download the new `terrakino.apk` from the [latest release](../../releases/latest) and install it **over** the old one. Your videos, watch progress, and settings will be saved.
-
----
-
-## 🔐 Why the App Needs Permissions
-
-| Permission | Purpose |
+| Значок | Что значит |
 |---|---|
-| 🔔 Notifications | The "Server is running" icon prevents Android from putting the app to sleep while episodes are downloading |
-| 📂 All files access | Instant transfer of episodes from "Downloads" and storing videos in the `Terrakino` folder: they won't be lost if you uninstall the app |
-| 🌐 Internet | Watching via links and downloading episodes |
+| 📱 на телефоне | Серия лежит файлом, ссылка не нужна |
+| 🔗 онлайн | Серия идёт по ссылке |
+| ⬇ скачивается | Серия загружается на телефон |
+| ⚠ обновить ссылку | Ссылка перестала открываться, вставьте новую |
+
+### ⬇️ Скачивание онлайн-серий на телефон
+
+- **Фоном.** Включите переключатель **«Докачивать остальные серии»** (для новых онлайн-сериалов он уже включён). Вы смотрите одну серию, остальные скачиваются сами, начиная со следующих.
+- **По кнопке.** **«⬇ Скачать на телефон все серии»** в карточке или **«⬇ Сохранить на телефон»** внутри одной серии.
+- Скачанная серия получает значок 📱 и больше не зависит от ссылки.
+- Переключатель **«Удалять после просмотра»** освобождает место: просмотренный файл удаляется с телефона.
+
+### ▶️ Плеер
+
+| Жест или кнопка | Что делает |
+|---|---|
+| 👆 **Одно касание** | Показать или скрыть панель управления |
+| ⏪⏩ **Двойное касание слева или справа** | Назад или вперёд на 10 секунд |
+| ⏯️ **Двойное касание в центре** | Пауза и воспроизведение |
+| 🎚️ **Полоса внизу** | Перемотка в любое место |
+| ⚡ **Кнопка «1×»** | Скорость: 1×, 1.25×, 1.5×, 2×, 0.75× |
+| ⛶ **Кнопка полного экрана** | Видео на весь экран |
+| ⏭️ **За 30 секунд до конца** | Предложение включить следующую серию |
+
+Приложение запоминает минуту, на которой вы остановились, и открывает серию с этого места. Когда серия досмотрена, она сама отмечается просмотренной.
+
+### 👤 Профиль
+
+Откройте профиль кнопкой с аватаром.
+
+| Раздел | Что внутри |
+|---|---|
+| 🧑 **Аватар и ник** | Нажмите на аватар, чтобы выбрать фото |
+| 📊 **Статистика** | Часы за неделю по дням, число просмотренных, серия дней подряд, самые просматриваемые |
+| 🏆 **Достижения** | 15 наград с полоской прогресса, при открытии приходит уведомление |
+| 🖼️ **Рамка аватара** | Несколько вариантов: от строгой до светящейся |
+| 🏷️ **Титул** | Выберите из готового списка. Особый титул может выдать создатель, и тогда он закрепляется за вашим именем |
+| 🎨 **Цвет сайта** | 22 темы, разделённые на светлые и тёмные |
+| 🗑️ **Удалять просмотренные** | Общая настройка для всех сериалов |
+| 🔄 **Приложение** | Проверка обновлений |
+| 📦 **Перенос данных** | Сохранение и загрузка данных одним файлом |
+| ⚡ **Перенос из «Загрузок»** | Включение мгновенного переноса файлов |
+
+### 🏆 Какие бывают достижения
+
+| | Достижение | Как получить |
+|---|---|---|
+| 🎬 | Первый сеанс | Отметить первую серию просмотренной |
+| 📺 | Втянулся · 🍿 Киноман · 🏆 Легенда экрана | 10, 50 и 100 просмотренных |
+| ⏱️ | 10 часов · ⌛ 100 часов | Суммарное время просмотра |
+| 🔥 | Марафонец | 3 часа просмотра за один день |
+| 📅 | Три дня подряд · 🗓️ Неделя подряд | Смотреть хотя бы минуту в день |
+| 📚 | Коллекционер | 10 фильмов и сериалов в каталоге |
+| ✅ | Досмотрел до конца | Просмотреть все серии сериала (от 3 серий) |
+| ⭐ | Любимчики | 5 избранных |
+| 🔗 | Онлайн-режим | Добавить серию или фильм по ссылке |
+| 🌙 | Ночной зритель | Смотреть видео после полуночи |
+| 🖼️ | Своё лицо | Поставить аватар |
+
+### 🎨 Темы
+
+| ☀️ Светлые | 🌙 Тёмные |
+|---|---|
+| Терра, Шалфей, Океан, Слива, Охра, Лаванда, Роза, Мята, Небо, Персик, Лимон, Ягода, Сланец, Бумага | Какао, Полночь, Графит, Лес, Бордо, Закат, Чёрный, Глубина |
+
+Выбор: **Профиль → Цвет сайта**. Цвет панелей телефона подстраивается под тему.
+
+### 📦 Перенос на другой телефон
+
+1. На старом: **Профиль → Перенос данных → Сохранить**. Файл `terrakino-data.json` появится в «Загрузках».
+2. Отправьте файл на новый телефон.
+3. На новом: **Профиль → Перенос данных → Выбрать**, выберите файл и нажмите **Заменить**.
+
+Переносятся прогресс, избранное, постеры, ник и ссылки. Видео нужно добавить заново.
 
 ---
 
-## ❓ FAQ
+## 🔄 Как обновить
+
+Скачайте новый `terrakino.apk` из [последнего релиза](../../releases/latest) и установите **поверх** старого. Видео, прогресс и настройки сохранятся.
+
+---
+
+## 🔐 Зачем приложению разрешения
+
+| Разрешение | Для чего |
+|---|---|
+| 🔔 Уведомления | Значок «Сервер работает», чтобы Android не усыплял приложение, пока качаются серии |
+| 📂 Доступ ко всем файлам | Мгновенный перенос серий из «Загрузок» и хранение видео в папке `Terrakino`: они не пропадут, если удалить приложение |
+| 🌐 Интернет | Просмотр по ссылкам и скачивание серий |
+
+---
+
+## ❓ Частые вопросы
 
 <details>
-<summary><b>The app won't install</b></summary>
+<summary><b>Приложение не устанавливается</b></summary>
 
-Allow installation from unknown sources for the browser you used to download the file. If a version with a different signature is already installed on your phone, uninstall it first.
+Разрешите установку из неизвестных источников для браузера, через который скачали файл. Если на телефоне уже стоит версия с другой подписью, сначала удалите её.
 </details>
 
 <details>
-<summary><b>An episode shows a ⚠ icon</b></summary>
+<summary><b>Серия показывает значок ⚠</b></summary>
 
-The video link is broken. Open the episode and tap "Update link".
+Ссылка на видео перестала открываться. Откройте серию и нажмите «Обновить ссылку».
 </details>
 
 <details>
-<summary><b>Where are my videos stored?</b></summary>
+<summary><b>Где лежат мои видео</b></summary>
 
-In the `Terrakino` folder in your phone's internal storage. If "All files access" is not granted, they are stored in the app's private folder. In that case, the videos will be deleted if you uninstall the app.
+В папке `Terrakino` во внутренней памяти телефона. Если доступ ко всем файлам не разрешён, то в папке приложения. Там видео удаляются вместе с приложением.
 </details>
 
 <details>
-<summary><b>What links are supported?</b></summary>
+<summary><b>Какие ссылки поддерживаются</b></summary>
 
-Direct links to a video file, such as `.mp4`. Streaming `.m3u8` links are not supported for playback on Android.
+Прямые ссылки на видеофайл, например `.mp4`. Потоковые ссылки `.m3u8` на Android не воспроизводятся.
 </details>
 
 <details>
-<summary><b>The screen turns off during playback</b></summary>
+<summary><b>Экран гаснет во время видео</b></summary>
 
-Update to the latest version: it keeps the screen on while a video is playing, including in full-screen mode. If the screen still turns off, check your phone settings to ensure battery saver is not enabled for the app.
+Обновитесь до последней версии: в ней экран остаётся включённым, пока видео играет, в том числе в полноэкранном режиме. Если экран всё равно гаснет, проверьте, что в настройках телефона для приложения не включена экономия батареи.
 </details>
 
 <details>
-<summary><b>How do I transfer data to another phone?</b></summary>
+<summary><b>Приложение просит создать аккаунт</b></summary>
 
-**Profile → Data Transfer → Save**, then on the new phone go to **Profile → Data Transfer → Select**. This transfers your progress, favorites, posters, nickname, and links. Videos must be added again.
+При первом запуске придумайте имя (3–20 символов: латиница, цифры и `_`) и пароль. **Имя потом изменить нельзя.** Интернет нужен только для первого входа, дальше приложение работает и без сети.
+</details>
+
+<details>
+<summary><b>Серии не переносятся из «Загрузок», а копируются</b></summary>
+
+Включите **Профиль → Приложение → «Перенос из «Загрузок»» → Включить** и разрешите доступ ко всем файлам. Перенос работает для папок «Загрузки», «Загрузки/Telegram», Movies и Telegram/Telegram Video.
 </details>
 
 ---
 
-## ⚖️ Disclaimer
+## ⚖️ Права
 
-This application is a media player. It does not contain or distribute any videos, and you are solely responsible for the files and links you add. Use only content to which you hold the appropriate rights.
+Приложение — это проигрыватель. Оно не содержит и не распространяет видео, а добавляемые файлы и ссылки остаются на вашей ответственности. Пользуйтесь только тем контентом, на который у вас есть права.
 
 <div align="center">
 
-<sub>Made with Claude · Anthropic</sub>
+<sub>Сделано с помощью Claude · Anthropic</sub>
 
 </div>
