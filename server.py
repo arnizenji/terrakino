@@ -3,13 +3,23 @@
 import os, re, json, time, mimetypes, base64, shutil, socket, ipaddress
 import urllib.request, urllib.error, threading, queue
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
-from urllib.parse import unquote, urlparse, urlsplit, parse_qs
+from urllib.parse import unquote, urlparse, urlsplit, parse_qs, urlencode
+from concurrent.futures import ThreadPoolExecutor
 
 HOST = "127.0.0.1"  # 127.0.0.1 = сайт виден только с этого телефона
 PORT = int(os.environ.get("TERRA_PORT") or 8080)
 ROOT = os.path.realpath(os.environ.get("TERRA_ROOT") or os.path.dirname(os.path.realpath(__file__)))  # папка с видео
 CLOUD = os.environ.get("TERRA_CLOUD") or ""  # cloud.json с адресом базы аккаунтов (необязателен)
 APP = os.environ.get("TERRA_APP") or ROOT  # где лежит index.html (в приложении для Android он отдельно от видео)
+try:
+    with open(CLOUD or os.path.join(APP, "cloud.json"), encoding="utf-8") as fh:
+        API_KEYS = json.load(fh)
+except (OSError, ValueError):
+    API_KEYS = {}
+KP_KEY = os.environ.get("KP_KEY") or API_KEYS.get("kp_key", "")
+KODIK_TOKEN = os.environ.get("KODIK_TOKEN") or API_KEYS.get("kodik_token", "")
+ONLINE_CACHE, ONLINE_CACHE_TTL = {}, 20 * 60
+ONLINE_TYPES = {"anime": "anime", "movie": "movie", "series": "series"}
 PEND = os.path.join(ROOT, ".pending.json")
 EXT = (".mp4", ".mkv", ".webm", ".m4v", ".mov", ".avi")
 AEXT = (".m4a", ".mp3", ".aac", ".opus", ".ogg", ".oga", ".weba", ".wav", ".flac", ".webm", ".mka")
@@ -265,6 +275,79 @@ def worker():
                 j["state"], j["err"] = "error", str(e)[:80]
 
 
+def online_get(url, headers):
+    req = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(req, timeout=12) as response:
+        return json.loads(response.read())
+
+
+def online_cached(key, url, headers):
+    now = time.time()
+    entry = ONLINE_CACHE.get(key)
+    if entry and now - entry[0] < ONLINE_CACHE_TTL:
+        return entry[1]
+    try:
+        value = online_get(url, headers)
+    except Exception:
+        return None
+    ONLINE_CACHE[key] = (now, value)
+    return value
+
+
+def online_search(query):
+    query = query.strip()[:120]
+    if len(query) < 2:
+        return []
+    tasks = [("shikimori", "shiki:" + query.lower(), "https://shikimori.one/api/animes?" + urlencode({"search": query, "limit": 16}), {"User-Agent": "Terrakino"})]
+    if KP_KEY:
+        tasks.append(("kinopoisk", "kp:" + query.lower(), "https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?" + urlencode({"keyword": query}), {"X-API-KEY": KP_KEY}))
+    with ThreadPoolExecutor(max_workers=len(tasks)) as pool:
+        responses = list(pool.map(lambda t: (t[0], online_cached(t[1], t[2], t[3])), tasks))
+    cards = []
+    for source, data in responses:
+        if source == "shikimori":
+            for anime in data or []:
+                poster = (anime.get("image") or {}).get("original", "")
+                cards.append({"id": "shikimori:" + str(anime.get("id", "")), "source": source, "shikimori_id": anime.get("id"), "title": anime.get("russian") or anime.get("name", ""), "year": (anime.get("aired_on") or "")[:4], "poster": "https://shikimori.one" + poster if poster.startswith("/") else poster, "type": "anime", "rating": anime.get("score"), "episodes": anime.get("episodes")})
+        elif data:
+            for film in data.get("films", []):
+                cards.append({"id": "kinopoisk:" + str(film.get("filmId", "")), "source": source, "shikimori_id": None, "kinopoisk_id": film.get("filmId"), "title": film.get("nameRu") or film.get("nameEn", ""), "year": film.get("year", ""), "poster": film.get("posterUrl", ""), "type": "series" if film.get("type") in ("TV_SERIES", "MINI_SERIES", "TV_SHOW") else "movie", "rating": film.get("rating")})
+    return cards
+
+
+def anilibria_search(title):
+    data = online_cached("anilibria:" + title.lower(), "https://api.anilibria.tv/v3/title/search?" + urlencode({"search": title[:120]}), {"User-Agent": "Terrakino"})
+    episodes = []
+    for item in data or []:
+        player = item.get("player") or {}
+        for number, episode in (player.get("list") or {}).items():
+            for quality in list((episode.get("hls") or {}).values()) + list((episode.get("mp4") or {}).values()):
+                if isinstance(quality, str) and quality:
+                    url = quality if quality.startswith("http") else "https://anilibria.tv" + quality
+                    episodes.append({"episode": number, "title": episode.get("name") or "Серия " + str(number), "link": url})
+                    break
+    return episodes
+
+
+def online_player(q):
+    shiki_id = q.get("shikimori_id", [""])[0][:32]
+    title = q.get("title", [""])[0][:120]
+    choices = []
+    if KODIK_TOKEN:
+        params = {"token": KODIK_TOKEN}
+        if shiki_id:
+            params["shikimori_id"] = shiki_id
+        else:
+            params["title"] = title
+        key = "kodik:" + json.dumps(params, sort_keys=True, ensure_ascii=False)
+        data = online_cached(key, "https://kodikapi.com/search?" + urlencode(params), {"User-Agent": "Terrakino"})
+        choices = [{"link": result.get("link", ""), "translation": result.get("translation") or {}, "title": result.get("title", "")} for result in (data or {}).get("results", []) if result.get("link")]
+    if not choices and shiki_id:
+        choices.append({"link": "https://kodik.info/find-player?shikimoriID=" + shiki_id, "translation": {"title": "Kodik"}, "title": title})
+    episodes = anilibria_search(title) if title and not KODIK_TOKEN else []
+    return {"choices": choices, "episodes": episodes}
+
+
 class H(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
@@ -296,10 +379,17 @@ class H(BaseHTTPRequestHandler):
             return self.blob(json.dumps(MANIFEST, ensure_ascii=False).encode(), "application/manifest+json; charset=utf-8")
         if u == "/cloud.json":
             try:
-                with open(CLOUD or os.path.join(APP, "cloud.json"), "rb") as fh:
-                    return self.blob(fh.read(), "application/json; charset=utf-8")
-            except OSError:
+                with open(CLOUD or os.path.join(APP, "cloud.json"), encoding="utf-8") as fh:
+                    config = json.load(fh)
+                config.pop("kp_key", None)
+                config.pop("kodik_token", None)
+                return self.blob(json.dumps(config, ensure_ascii=False).encode(), "application/json; charset=utf-8")
+            except (OSError, ValueError):
                 return self.send_error(404)
+        if u == "/api/online/search":
+            return self.jsend(online_search(parse_qs(urlparse(self.path).query).get("q", [""])[0]))
+        if u == "/api/online/player":
+            return self.jsend(online_player(parse_qs(urlparse(self.path).query)))
         if u == "/api/stats":
             return self.jsend(stats())
         if u == "/api/jobs":
