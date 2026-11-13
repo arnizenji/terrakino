@@ -309,7 +309,13 @@ class H(BaseHTTPRequestHandler):
         if u == "/api/library":
             sweep()
             return self.jsend({"items": scan()})
-        f = os.path.join(APP, "index.html") if u in ("/", "/index.html") else safe(u.lstrip("/"))
+        if u.startswith("/static/"):
+            static_root = os.path.realpath(os.path.join(APP, "static"))
+            f = os.path.realpath(os.path.join(APP, u.lstrip("/")))
+            if not f.startswith(static_root + os.sep):
+                return self.send_error(404)
+        else:
+            f = os.path.join(APP, "index.html") if u in ("/", "/index.html") else safe(u.lstrip("/"))
         if not f or not os.path.isfile(f):
             return self.send_error(404)
         size = os.path.getsize(f)
