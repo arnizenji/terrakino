@@ -4,3 +4,5 @@
 .graphify/
 __pycache__/
 *.pyc
+
+graphify-out/
