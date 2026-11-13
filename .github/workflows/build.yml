@@ -43,6 +43,7 @@ jobs:
           for f in index.html server.py version.txt; do
             if [ -f "$f" ]; then cp "$f" "$SITE/$f"; fi
           done
+          cp -R static "$SITE/static"
           sed -i "s#__REPO__#${GITHUB_REPOSITORY}#" "$SITE/config.json"
           echo "$KS" | base64 -d > build_src/app/terra.p12
 
